@@ -1,6 +1,18 @@
 # Amaze UI Change Log
 ---
 
+### 2015.04 W3
+
+**CSS:**
+
+- `FIXED` 修复 Input-group 设置颜色后在 `.am-form` 中无效问题；
+- `INPROVED` Form 表单验证状态图标支持带有 `label` 的 from group；
+
+**JS:**
+
+- `IMPROVED` #528 Validator `H5inputType` 优先使用用户定义的验证规则；
+- `IMPROVED` #520 添加设置触发验证程序事件选项 `activeKeyup`、`textareaMaxlenthKeyup`。
+
 ### 2015.04 W1
 
 **CSS:**
