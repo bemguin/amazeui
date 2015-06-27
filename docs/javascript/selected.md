@@ -123,7 +123,7 @@ doc: docs/javascript/selected.md
 - `btnStyle`: 按钮风格，`[primary|secondary|success|warning|danger]`
 
 `````html
-<select data-am-selected="{btnWidth: 300, btnSize: 'sm', btnStyle: 'secondary'}">
+<select data-am-selected="{btnWidth: '40%', btnSize: 'sm', btnStyle: 'secondary'}">
   <option value="a">Apple</option>
   <option value="b">Banana</option>
   <option value="o">Orange</option>
@@ -131,7 +131,7 @@ doc: docs/javascript/selected.md
 </select>
 `````
 ```html
-<select data-am-selected="{btnWidth: 300, btnSize: 'sm', btnStyle: 'secondary'}">
+<select data-am-selected="{btnWidth: '40%', btnSize: 'sm', btnStyle: 'secondary'}">
   <option value="a">Apple</option>
   <option value="b">Banana</option>
   <option value="o">Orange</option>

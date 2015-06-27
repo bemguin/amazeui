@@ -1,8 +1,8 @@
 'use strict';
 
 var $ = require('jquery');
-require('./core');
-require('./ui.smooth-scroll');
+var UI = require('../../../js/core');
+require('../../../js/ui.smooth-scroll');
 
 function goTopInit() {
   var $goTop = $('[data-am-widget="gotop"]');
@@ -31,7 +31,7 @@ function goTopInit() {
 
 $(goTopInit);
 
-module.exports = $.AMUI.gotop = {
+module.exports = UI.gotop = {
   VERSION: '4.0.2',
   init: goTopInit
 };

@@ -25,6 +25,7 @@ var Selected = function(element, options) {
   this.$originalOptions = this.$element.find('option');
   this.multiple = element.multiple;
   this.$selector = null;
+  this.initialized = false;
   this.init();
 };
 
@@ -34,7 +35,7 @@ Selected.DEFAULTS = {
   btnStyle: 'default',
   dropUp: 0,
   maxHeight: null,
-  noSelectedText: '点击选择...',
+  placeholder: '点击选择...',
   selectedClass: 'am-checked',
   disabledClass: 'am-disabled',
   searchBox: false,
@@ -50,7 +51,7 @@ Selected.DEFAULTS = {
   '<span class="am-icon-chevron-left">返回</span></h2>' +
   '   <% if (searchBox) { %>' +
   '   <div class="am-selected-search">' +
-  '     <input type="text" autocomplete="off" class="am-form-field" />' +
+  '     <input autocomplete="off" class="am-form-field am-input-sm" />' +
   '   </div>' +
   '   <% } %>' +
   '    <ul class="am-selected-list">' +
@@ -100,17 +101,19 @@ Selected.prototype.init = function() {
     multiple: this.multiple,
     options: [],
     searchBox: options.searchBox,
-    dropUp: options.dropUp
+    dropUp: options.dropUp,
+    placeholder: options.placeholder
   };
 
   this.$selector = $(UI.template(this.options.tpl, data));
+  // set select button styles
+  this.$selector.css({width: this.options.btnWidth});
+
   this.$list = this.$selector.find('.am-selected-list');
   this.$searchField = this.$selector.find('.am-selected-search input');
   this.$hint = this.$selector.find('.am-selected-hint');
 
-  // set select button styles
-  var $selectorBtn = this.$selector.find('.am-selected-btn').
-    css({width: this.options.btnWidth});
+  var $selectorBtn = this.$selector.find('.am-selected-btn');
   var btnClassNames = [];
 
   options.btnSize && btnClassNames.push('am-btn-' + options.btnSize);
@@ -156,6 +159,7 @@ Selected.prototype.init = function() {
   // #try to fixes #476
   setTimeout(function() {
     _this.syncData();
+    _this.initialized = true;
   }, 0);
 
   this.bindEvents();
@@ -171,7 +175,8 @@ Selected.prototype.renderOptions = function() {
   // 单选框使用 JS 禁用已经选择的 option 以后，
   // 浏览器会重新选定第一个 option，但有一定延迟，致使 JS 获取 value 时返回 null
   if (!this.multiple && ($element.val() === null)) {
-    this.$originalOptions.get(0).selected = true;
+    this.$originalOptions.length &&
+    (this.$originalOptions.get(0).selected = true);
   }
 
   function pushOption(index, item, group) {
@@ -242,6 +247,7 @@ Selected.prototype.syncData = function(item) {
   var options = this.options;
   var status = [];
   var $checked = $([]);
+
   this.$shadowOptions.filter('.' + options.selectedClass).each(function() {
     var $this = $(this);
     status.push($this.find('.am-selected-text').text());
@@ -263,11 +269,13 @@ Selected.prototype.syncData = function(item) {
 
   // nothing selected
   if (!this.$element.val()) {
-    status = [options.noSelectedText];
+    status = [options.placeholder];
   }
 
   this.$status.text(status.join(', '));
-  this.$element.trigger('change');
+
+  // Do not trigger change event on initializing
+  this.initialized && this.$element.trigger('change');
 };
 
 Selected.prototype.bindEvents = function() {
@@ -319,37 +327,15 @@ Selected.prototype.destroy = function() {
   this.$selector.remove();
 };
 
-function Plugin(option) {
-  return this.each(function() {
-    var $this = $(this);
-    var data = $this.data('amui.selected');
-    var options = $.extend({}, UI.utils.parseOptions($this.data('amSelected')),
-      UI.utils.parseOptions($this.data('amSelectit')),
-      typeof option === 'object' && option);
-
-    if (!data && option === 'destroy') {
-      return;
-    }
-
-    if (!data) {
-      $this.data('amui.selected', (data = new Selected(this, options)));
-    }
-
-    if (typeof option == 'string') {
-      data[option] && data[option]();
-    }
-  });
-}
+UI.plugin('selected', Selected);
 
 // Conflict with jQuery form
 // https://github.com/malsup/form/blob/6bf24a5f6d8be65f4e5491863180c09356d9dadd/jquery.form.js#L1240-L1258
 // https://github.com/allmobilize/amazeui/issues/379
-$.fn.selected = $.fn.selectIt = Plugin;
+// $.fn.selected = $.fn.selectIt = Plugin;
 
 UI.ready(function(context) {
-  $('[data-am-selected]', context).selectIt();
+  $('[data-am-selected]', context).selected();
 });
-
-$.AMUI.selected = Selected;
 
 module.exports = Selected;
